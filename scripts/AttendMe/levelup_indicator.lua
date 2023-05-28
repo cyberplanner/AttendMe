@@ -1,7 +1,7 @@
 local ui = require('openmw.ui')
 local util = require('openmw.util')
--- local calendar = require('openmw_aux.calendar')
 local time = require('openmw_aux.time')
+local self = require('openmw.self')
 
 local element = ui.create {
     -- important not to forget the layer
@@ -16,15 +16,16 @@ local element = ui.create {
         anchor = util.vector2(1, 0),
         -- text = calendar.formatGameTime('%H:%M'),
         text = "LEVEL UP!",
-        textSize = 24,
+        textSize = 18,
         -- default black text color isn't always visible, lime green is better
-        textColor = util.color.rgb(0, 1, 0),
+        textColor = util.color.rgb(158, 0, 237),
     },
 }
 
 local function updateTime()
-    -- ui.log('Updating time')
+    local health = (self.object.type).stats.dynamic.health(self)
     ui.showMessage("LEVEL UP!")
+    ui.showMessage(tostring(health.current) .. " / " .. tostring(health.base) .. " health")
     -- formatGameTime uses current time by default
     -- otherwise we could get it by calling `core.getGameTime()`
     -- element.layout.props.text = calendar.formatGameTime('%H:%M')
