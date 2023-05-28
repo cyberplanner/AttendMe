@@ -1,0 +1,6 @@
+group_name: Gameplay Settings
+teleportFollowers_name: Teleport Followers
+checkFollowersEvery_name: "Check followers every N seconds"
+checkFollowersEvery_description: "Increasing this number will improve performance, at the cost of slower reaction to followers joining, leaving or dying.
+  
+  Value of 0 makes the check happen every frame."
