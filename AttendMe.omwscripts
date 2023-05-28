@@ -1,4 +1,3 @@
 PLAYER: scripts/AttendMe/player.lua
-PLAYER: scripts/AttendMe/levelup_indicator.lua
 NPC, CREATURE: scripts/AttendMe/actor.lua
 GLOBAL: scripts/AttendMe/global.lua

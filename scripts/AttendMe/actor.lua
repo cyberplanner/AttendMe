@@ -1,10 +1,8 @@
--- this script finds followers and teleports them to the player
 local core = require('openmw.core')
 local types = require('openmw.types')
 local self = require('openmw.self')
 local storage = require('openmw.storage')
 local I = require('openmw.interfaces')
-local ui = require('openmw.ui')
 
 local Events = require('scripts.AttendMe.events')
 
@@ -44,7 +42,6 @@ local function isDead()
    return health.current == 0
 end
 
---  this is the main function
 local function updateFollowedPlayers()
    local playerTargets = map(
    filter(I.AI.getTargets('Follow'), function(_, target)
