@@ -15,21 +15,37 @@ local element = ui.create {
         -- change it to align exactly to the top right corner of the screen
         anchor = util.vector2(1, 0),
         -- text = calendar.formatGameTime('%H:%M'),
-        text = "LEVEL UP!",
+        text = "TEST!",
         textSize = 18,
         -- default black text color isn't always visible, lime green is better
         textColor = util.color.rgb(158, 0, 237),
     },
 }
 
+
 local function updateTime()
-    local health = (self.object.type).stats.dynamic.health(self)
-    ui.showMessage("LEVEL UP!")
-    ui.showMessage(tostring(health.current) .. " / " .. tostring(health.base) .. " health")
+    -- local health = (self.object.type).stats.dynamic.health(self)
+    -- ui.showMessage(tostring(health.current) .. " / " .. tostring(health.base) .. " health")
+
+    -- local isPlayer = (self.object.type).objectIsInstance(self, "player")
+    local stats = (self.object.type).stats.level(self)
+    local progress = stats.progress
+    local currentLevel = stats.current
+    local nextLevel = currentLevel + 1
+    local isReadyToLevelUp = progress >= 10
+
+    -- ui.showMessage("LEVEL: " .. tostring(stats.current) .. "  / Progress: " .. tostring(progress))
     -- formatGameTime uses current time by default
+
     -- otherwise we could get it by calling `core.getGameTime()`
     -- element.layout.props.text = calendar.formatGameTime('%H:%M')
-    element.layout.props.text = "LEVEL UP!"
+    -- ui.showMessage("LEVEL UP!" .. self.object.name)
+    if isReadyToLevelUp then
+        ui.showMessage("Ready to level up...")
+        element.layout.props.text = "LEVEL: " .. tostring(stats.current) .. "  * Advance to lvl: " .. tostring(nextLevel)
+    else
+        element.layout.props.text = "LEVEL: " .. tostring(stats.current) .. "  * Progress: " .. tostring(progress .. " / 10")
+    end
     -- the layout changes won't affect the widget unless we request an update
     element:update()
 end
