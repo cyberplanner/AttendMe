@@ -24,25 +24,28 @@ local element = ui.create {
 
 
 local function updateTime()
-    ui.showMessage("Checking level up...")
-    print("This is a console message.")
     -- local health = (self.object.type).stats.dynamic.health(self)
     -- ui.showMessage(tostring(health.current) .. " / " .. tostring(health.base) .. " health")
 
-    local isPlayer = (self.object.type).objectIsInstance(self, "player")
-    -- ui.showMessage(tostring(isPlayer) .. "isPlayer: ")
-    
-    -- ui.showMessage(tostring(level) .. " level")
-    -- ui.showMessage(tostring(progress) .. " progress")
+    -- local isPlayer = (self.object.type).objectIsInstance(self, "player")
     local stats = (self.object.type).stats.level(self)
+    local progress = stats.progress
+    local currentLevel = stats.current
+    local nextLevel = currentLevel + 1
+    local isReadyToLevelUp = progress >= 10
 
-    ui.showMessage(tostring(stats.progress) .. "  /  " .. tostring(stats.current) .. " LVL Progress")
+    -- ui.showMessage("LEVEL: " .. tostring(stats.current) .. "  / Progress: " .. tostring(progress))
     -- formatGameTime uses current time by default
 
     -- otherwise we could get it by calling `core.getGameTime()`
     -- element.layout.props.text = calendar.formatGameTime('%H:%M')
     -- ui.showMessage("LEVEL UP!" .. self.object.name)
-    element.layout.props.text = "LEVEL UP!"
+    if isReadyToLevelUp then
+        ui.showMessage("Ready to level up...")
+        element.layout.props.text = "LEVEL: " .. tostring(stats.current) .. "  * Advance to lvl: " .. tostring(nextLevel)
+    else
+        element.layout.props.text = "LEVEL: " .. tostring(stats.current) .. "  * Progress: " .. tostring(progress .. " / 10")
+    end
     -- the layout changes won't affect the widget unless we request an update
     element:update()
 end
