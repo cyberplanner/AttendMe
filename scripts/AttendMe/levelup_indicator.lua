@@ -3,6 +3,16 @@ local util = require('openmw.util')
 local time = require('openmw_aux.time')
 local self = require('openmw.self')
 
+-- local health = (self.object.type).stats.dynamic.health(self)
+-- ui.showMessage(tostring(health.current) .. " / " .. tostring(health.base) .. " health")
+
+-- local isPlayer = (self.object.type).objectIsInstance(self, "player")
+local stats = (self.object.type).stats.level(self)
+local progress = stats.progress
+local currentLevel = stats.current
+local nextLevel = currentLevel + 1
+local isReadyToLevelUp = progress >= 10
+
 local element = ui.create {
     -- important not to forget the layer
     -- by default widgets are not attached to any layer and are not visible
@@ -18,7 +28,9 @@ local element = ui.create {
         text = "Initiating Level Indicator...",
         textSize = 14,
         -- default black text color isn't always visible, lime green is better
-        textColor = util.color.rgb(158, 0, 237),
+        textColor = util.color.rgb(255, 200, 0),
+        textShadow = true,
+        textShadowColor = util.color.rgb(255, 73, 0)
     },
 }
 
@@ -38,21 +50,38 @@ local progressElement = ui.create {
         textSize = 12,
         -- default black text color isn't always visible, lime green is better
         textColor = util.color.rgb(1, 1, 1),
+        textShadow = true,
+        textShadowColor = util.color.rgb(0, 0, 0)
     },
 }
 
-
-local function updateTime()
-    -- local health = (self.object.type).stats.dynamic.health(self)
-    -- ui.showMessage(tostring(health.current) .. " / " .. tostring(health.base) .. " health")
-
-    -- local isPlayer = (self.object.type).objectIsInstance(self, "player")
+local function flashText()
     local stats = (self.object.type).stats.level(self)
     local progress = stats.progress
     local currentLevel = stats.current
     local nextLevel = currentLevel + 1
     local isReadyToLevelUp = progress >= 10
+    -- local stats = (self.object.type).stats.level(self)
+    -- local progress = stats.progress
+    -- local isReadyToLevelUp = progress >= 10
 
+    if isReadyToLevelUp then
+        if progressElement.layout.props.text == "" then
+            progressElement.layout.props.text = "Advance to lvl: " .. tostring(nextLevel) .. "!!"
+        else
+            progressElement.layout.props.text = ""
+        end
+    end
+    -- the layout changes won't affect the widget unless we request an update
+    progressElement:update()
+end
+
+local function updateTime()
+    local stats = (self.object.type).stats.level(self)
+    local progress = stats.progress
+    local currentLevel = stats.current
+    local nextLevel = currentLevel + 1
+    local isReadyToLevelUp = progress >= 10
     -- ui.showMessage("LEVEL: " .. tostring(stats.current) .. "  / Progress: " .. tostring(progress))
     -- formatGameTime uses current time by default
 
@@ -75,4 +104,6 @@ end
 
 -- we are showing game time in hours and minutes
 -- so no need to update more often than once a game minute
-time.runRepeatedly(updateTime, 1 * time.minute, { type = time.GameTime })
+-- I chnaged that to 5!
+time.runRepeatedly(updateTime, 5 * time.minute, { type = time.GameTime })
+time.runRepeatedly(flashText, 5 * time.second, { type = time.GameTime })
