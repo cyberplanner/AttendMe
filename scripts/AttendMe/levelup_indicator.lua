@@ -28,9 +28,12 @@ local element = ui.create {
         text = "Initiating Level Indicator...",
         textSize = 14,
         -- default black text color isn't always visible, lime green is better
-        textColor = util.color.rgb(255, 200, 0),
+        -- textColor = util.color.rgb(255, 200, 0),
+        -- textColor = util.color.rgb(242, 154, 2),
+        -- change to golden yellow
+        textColor = util.color.rgb(255, 215, 0),
         textShadow = true,
-        textShadowColor = util.color.rgb(255, 73, 0)
+        textShadowColor = util.color.rgb(0, 0, 1)
     },
 }
 
@@ -68,12 +71,15 @@ local function flashText()
     if isReadyToLevelUp then
         if progressElement.layout.props.text == "" then
             progressElement.layout.props.text = "Advance to lvl: " .. tostring(nextLevel) .. "!!"
+            element.layout.props.textColor = util.color.rgb(171, 0, 3) -- red
         else
             progressElement.layout.props.text = ""
+            element.layout.props.textColor = util.color.rgb(242, 154, 2) -- lime green
         end
     end
     -- the layout changes won't affect the widget unless we request an update
     progressElement:update()
+    element:update()
 end
 
 local function updateTime()
@@ -106,4 +112,4 @@ end
 -- so no need to update more often than once a game minute
 -- I chnaged that to 5!
 time.runRepeatedly(updateTime, 5 * time.minute, { type = time.GameTime })
-time.runRepeatedly(flashText, 5 * time.second, { type = time.GameTime })
+time.runRepeatedly(flashText, 12 * time.second, { type = time.GameTime })
