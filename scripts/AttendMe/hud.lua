@@ -39,7 +39,7 @@ I.Settings.registerRenderer('AttendMeScreenPosition', function(value, set)
                      {
                         type = ui.TYPE.Image,
                         props = {
-                           resource = ui.texture({ path = 'textures/menu_map_smark.dds' }),
+                           resource = ui.texture({ path = 'textures/menu_map_smark.dds' }),  -- TODO:  textures?! niiice
                            relativeSize = util.vector2(1, 1),
                            color = util.color.rgb(202 / 255, 165 / 255, 96 / 255),
                         },
@@ -154,10 +154,6 @@ local function insertBetween(list, item)
    end
    return result
 end
-
-
-
-
 
 
 

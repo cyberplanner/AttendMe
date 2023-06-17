@@ -2,61 +2,72 @@ local ui = require('openmw.ui')
 local util = require('openmw.util')
 local time = require('openmw_aux.time')
 local self = require('openmw.self')
+local storage = require('openmw.storage')
+-- local I = require('openmw.interfaces')
 
--- local health = (self.object.type).stats.dynamic.health(self)
--- ui.showMessage(tostring(health.current) .. " / " .. tostring(health.base) .. " health")
-
--- local isPlayer = (self.object.type).objectIsInstance(self, "player")
-local stats = (self.object.type).stats.level(self)
-local progress = stats.progress
-local currentLevel = stats.current
-local nextLevel = currentLevel + 1
-local isReadyToLevelUp = progress >= 10
+local bit8 = 255
+local statColors = {
+    fatigue = util.color.rgb(0 / bit8, 150 / bit8, 60 / bit8),
+    health = util.color.rgb(200 / bit8, 60 / bit8, 30 / bit8),
+    magicka = util.color.rgb(53 / bit8, 69 / bit8, 159 / bit8),
+}
 
 local element = ui.create {
-    -- important not to forget the layer
-    -- by default widgets are not attached to any layer and are not visible
     layer = 'HUD',
     type = ui.TYPE.Text,
     props = {
-        -- position in the top right corner
         relativePosition = util.vector2(0.9, 0.05),
-        -- position is for the top left corner of the widget by default
-        -- change it to align exactly to the top right corner of the screen
         anchor = util.vector2(1, 0),
-        -- text = calendar.formatGameTime('%H:%M'),
-        text = "Initiating Level Indicator...",
+        -- text = "Initiating Level Indicator...",
+        text = "Reaching for Meridia's grace...",
         textSize = 14,
-        -- default black text color isn't always visible, lime green is better
-        -- textColor = util.color.rgb(255, 200, 0),
-        -- textColor = util.color.rgb(242, 154, 2),
-        -- change to golden yellow
-        textColor = util.color.rgb(255, 215, 0),
+        textColor = statColors.health,
         textShadow = true,
-        textShadowColor = util.color.rgb(0, 0, 1)
+        textShadowColor =  statColors.magicka,
     },
 }
 
 local progressElement = ui.create {
-    -- important not to forget the layer
-    -- by default widgets are not attached to any layer and are not visible
     layer = 'HUD',
     type = ui.TYPE.Text,
     props = {
-        -- position in the top right corner
         relativePosition = util.vector2(0.9, 0.07),
-        -- position is for the top left corner of the widget by default
-        -- change it to align exactly to the top right corner of the screen
         anchor = util.vector2(1, 0),
-        -- text = calendar.formatGameTime('%H:%M'),
         text = "Initiating Level Indicator...",
         textSize = 12,
-        -- default black text color isn't always visible, lime green is better
         textColor = util.color.rgb(1, 1, 1),
         textShadow = true,
         textShadowColor = util.color.rgb(0, 0, 0)
     },
 }
+
+-- local iconTex = ui.texture({
+--     path = 'textures/menu_bar_red.dds'
+-- })
+local iconStandby = ui.texture({
+    path = 'textures/level_up_00.dds'
+})
+
+local IconReady = ui.texture({
+    path = 'textures/level_up_01.dds'
+})
+
+local iconElement = ui.create {
+    type = ui.TYPE.Container,
+    layer = 'HUD',
+    props = {
+        relativePosition = util.vector2(0.02, 0.05)
+    },
+    content = ui.content {{
+        type = ui.TYPE.Image,
+        props = {
+            resource = iconStandby,
+            size = util.vector2(40 , 40)
+        }
+    }}
+}
+
+
 
 local function flashText()
     local stats = (self.object.type).stats.level(self)
@@ -64,13 +75,10 @@ local function flashText()
     local currentLevel = stats.current
     local nextLevel = currentLevel + 1
     local isReadyToLevelUp = progress >= 10
-    -- local stats = (self.object.type).stats.level(self)
-    -- local progress = stats.progress
-    -- local isReadyToLevelUp = progress >= 10
 
     if isReadyToLevelUp then
         if progressElement.layout.props.text == "" then
-            progressElement.layout.props.text = "Advance to lvl: " .. tostring(nextLevel) .. "!!"
+            progressElement.layout.props.text = "Ascend to lvl: " .. tostring(nextLevel) .. "!!"
             element.layout.props.textColor = util.color.rgb(171, 0, 3) -- red
         else
             progressElement.layout.props.text = ""
@@ -80,6 +88,7 @@ local function flashText()
     -- the layout changes won't affect the widget unless we request an update
     progressElement:update()
     element:update()
+    -- iconElement:update()
 end
 
 local function updateTime()
@@ -88,28 +97,25 @@ local function updateTime()
     local currentLevel = stats.current
     local nextLevel = currentLevel + 1
     local isReadyToLevelUp = progress >= 10
-    -- ui.showMessage("LEVEL: " .. tostring(stats.current) .. "  / Progress: " .. tostring(progress))
-    -- formatGameTime uses current time by default
 
-    -- otherwise we could get it by calling `core.getGameTime()`
-    -- element.layout.props.text = calendar.formatGameTime('%H:%M')
-    -- ui.showMessage("LEVEL UP!" .. self.object.name)
     progressElement.layout.props.text = ""
     if isReadyToLevelUp then
         ui.showMessage("Ready to level up...")
         element.layout.props.text = "LEVEL: " .. tostring(stats.current)
-        progressElement.layout.props.text = "Advance to lvl: " .. tostring(nextLevel) .. "!!"
+        progressElement.layout.props.text = "Ascend to lvl: " .. tostring(nextLevel) .. "!!"
+        iconElement.layout.props.content[1].props.resource = IconReady
     else
         element.layout.props.text = "LEVEL: " .. tostring(stats.current)
         progressElement.layout.props.text = "Progress: " .. tostring(progress) .. "/10"
+        iconElement.layout.props.content[1].props.resource = iconStandby
     end
-    -- the layout changes won't affect the widget unless we request an update
     element:update()
     progressElement:update()
+    iconElement:update()
 end
 
 -- we are showing game time in hours and minutes
 -- so no need to update more often than once a game minute
 -- I chnaged that to 5!
-time.runRepeatedly(updateTime, 5 * time.minute, { type = time.GameTime })
+time.runRepeatedly(updateTime, 1 * time.minute, { type = time.GameTime })
 time.runRepeatedly(flashText, 12 * time.second, { type = time.GameTime })
